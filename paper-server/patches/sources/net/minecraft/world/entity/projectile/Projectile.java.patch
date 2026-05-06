@@ -169,7 +169,7 @@
      protected void onRedirectProjectile(final Projectile hitProjectile) {
          hitProjectile.deflect(ProjectileDeflection.AIM_DEFLECT, this.getOwner(), this.owner, true, 1.0);
      }
-@@ -382,6 +_,15 @@
+@@ -382,6 +_,21 @@
          }
  
          Entity owner = this.getOwner();
@@ -177,7 +177,13 @@
 +        if (owner instanceof net.minecraft.server.level.ServerPlayer) {
 +            org.bukkit.entity.Entity collided = entity.getBukkitEntity();
 +            org.bukkit.entity.Player shooter = (org.bukkit.entity.Player) owner.getBukkitEntity();
-+            if (!shooter.canSee(collided)) {
++
++            final boolean canSee = shooter.canSee(collided);
++            if (!canSee && !(entity instanceof net.minecraft.server.level.ServerPlayer)) {
++                return false;
++            }
++
++            if (entity instanceof net.minecraft.server.level.ServerPlayer player && !player.gameMode().isSurvival()) {
 +                return false;
 +            }
 +        }
