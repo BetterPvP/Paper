@@ -155,7 +155,7 @@
      protected ProjectileDeflection hitTargetOrDeflectSelf(HitResult hitResult) {
          if (hitResult.getType() == HitResult.Type.ENTITY) {
              EntityHitResult entityHitResult = (EntityHitResult)hitResult;
-@@ -291,15 +_,35 @@
+@@ -291,15 +_,41 @@
      }
  
      protected void onHitBlock(BlockHitResult result) {
@@ -183,7 +183,13 @@
 +            if (owner instanceof net.minecraft.server.level.ServerPlayer) {
 +                org.bukkit.entity.Entity collided = target.getBukkitEntity();
 +                org.bukkit.entity.Player shooter = (org.bukkit.entity.Player) owner.getBukkitEntity();
-+                if (!shooter.canSee(collided)) {
++
++                final boolean canSee = shooter.canSee(collided);
++                if (!canSee && !(target instanceof net.minecraft.server.level.ServerPlayer)) {
++                    return false;
++                }
++
++                if (target instanceof net.minecraft.server.level.ServerPlayer player && !player.gameMode().isSurvival()) {
 +                    return false;
 +                }
 +            }
