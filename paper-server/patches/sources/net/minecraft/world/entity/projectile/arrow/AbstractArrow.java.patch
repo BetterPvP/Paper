@@ -15,13 +15,24 @@
          this.pickupItemStack = pickupItemStack.copy();
          this.applyComponentsFromItemStack(pickupItemStack);
          Unit unit = pickupItemStack.remove(DataComponents.INTANGIBLE_PROJECTILE);
-@@ -111,8 +_,8 @@
+@@ -111,8 +_,19 @@
      protected AbstractArrow(
          EntityType<? extends AbstractArrow> type, LivingEntity owner, Level level, ItemStack pickupItemStack, @Nullable ItemStack firedFromWeapon
      ) {
 -        this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), level, pickupItemStack, firedFromWeapon);
 -        this.setOwner(owner);
-+        this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), level, pickupItemStack, firedFromWeapon, owner); // CraftBukkit
++        // Paper start - 1.8 bow-hand spawn offset
++        this(
++            type,
++            owner.getX() - Mth.cos(owner.getYRot() * ((float) Math.PI / 180.0F)) * 0.16F,
++            owner.getEyeY() - 0.1F,
++            owner.getZ() - Mth.sin(owner.getYRot() * ((float) Math.PI / 180.0F)) * 0.16F,
++            level,
++            pickupItemStack,
++            firedFromWeapon,
++            owner
++        ); // CraftBukkit
++        // Paper end - 1.8 bow-hand spawn offset
 +        // this.setOwner(owner); // SPIGOT-7744 - Moved to the above constructor
      }
  
