@@ -29,7 +29,9 @@ jobs:
         run: |
           git config --global user.email "ci@betterpvp.net"
           git config --global user.name "BetterPvP CI"
-          ./gradlew applyPatches createPaperclipJar --console=plain
+          # Separate runs: building in the same run as applyPatches trips Gradle's task-ordering check.
+          ./gradlew applyPatches --console=plain
+          ./gradlew createPaperclipJar --console=plain
 
       - name: Release
         env:
