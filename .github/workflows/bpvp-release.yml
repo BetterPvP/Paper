@@ -26,9 +26,15 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build the paperclip jar
+        env:
+          TAG: ${{ github.ref_name }}
         run: |
           git config --global user.email "ci@betterpvp.net"
           git config --global user.name "BetterPvP CI"
+          # The version string reads the branch, build number and build time. A tag checkout has none of them.
+          git switch -C ver/26.3
+          export BUILD_NUMBER="${TAG##*-bpvp.}"
+          export BUILD_STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           # Separate runs: building in the same run as applyPatches trips Gradle's task-ordering check.
           ./gradlew applyPatches --console=plain
           ./gradlew createPaperclipJar --console=plain
