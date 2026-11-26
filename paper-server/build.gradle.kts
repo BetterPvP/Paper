@@ -8,13 +8,14 @@ plugins {
     `maven-publish`
     idea
     id("io.papermc.paperweight.core")
+    id("io.papermc.paperweight.paper-checkstyle")
     id("io.papermc.fill.gradle") version "1.0.14"
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 
 dependencies {
-    mache("io.papermc:mache:26.3+build.1")
+    mache("io.papermc:mache:26.3+build.2")
     paperclip("io.papermc:paperclip:3.0.4")
 }
 
@@ -25,6 +26,10 @@ paperweight {
     updatingMinecraft {
         //oldPaperCommit = "e5fe71723e2ffde7cc9fafc085ac3bb73e63175e"
     }
+}
+
+paperCheckstyle {
+    directoriesToSkipFile = layout.projectDirectory.file(".checkstyle/ignored_directories.txt")
 }
 
 tasks.generateDevelopmentBundle {
@@ -110,10 +115,11 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
 
 dependencies {
     implementation(project(":paper-api"))
-    implementation(platform("ca.spottedleaf.leafpile:bom:1.2.4"))
+    implementation(platform("ca.spottedleaf.leafpile:bom:1.3.3"))
     implementation("ca.spottedleaf.leafpile:common")
     implementation("ca.spottedleaf.leafpile:concurrentutil")
     implementation("ca.spottedleaf.leafpile:converter")
+    implementation("ca.spottedleaf.leafpile:ioutil")
     implementation("org.jline:jline-terminal-ffm:4.4.6")
     implementation("net.minecrell:terminalconsoleappender:1.3.0")
     implementation("net.kyori:adventure-text-serializer-ansi")
@@ -284,10 +290,10 @@ fun TaskContainer.registerRunTask(
         .asFile
     javaLauncher.set(project.javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(25))
-        // TODO - JB runtime 25 has issues with spark rn
-        // vendor.set(JvmVendorSpec.JETBRAINS)
+        @Suppress("UnstableApiUsage")
+        vendor.set(JvmVendorSpec.JETBRAINS)
     })
-    jvmArgs(/*"-XX:+AllowEnhancedClassRedefinition", */"--enable-native-access=ALL-UNNAMED")
+    jvmArgs("-XX:+AllowEnhancedClassRedefinition", "--enable-native-access=ALL-UNNAMED")
 
     if (rootProject.childProjects["test-plugin"] != null) {
         val testPluginJar = rootProject.project(":test-plugin").tasks.jar.flatMap { it.archiveFile }

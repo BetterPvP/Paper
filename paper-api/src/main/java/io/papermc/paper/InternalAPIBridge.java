@@ -10,6 +10,7 @@ import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.world.damagesource.CombatEntry;
 import io.papermc.paper.world.damagesource.FallLocationType;
 import java.io.IOException;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
@@ -27,6 +28,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.damage.DamageEffect;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
+import org.bukkit.enchantments.EnchantmentOffer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -55,10 +57,11 @@ public interface InternalAPIBridge {
      * @return the instance.
      */
     static InternalAPIBridge get() {
+        //<editor-fold defaultstate="collapsed" desc="Holder">
         class Holder {
-
-            public static final InternalAPIBridge INSTANCE = Services.service(InternalAPIBridge.class).orElseThrow();
+            public static final InternalAPIBridge INSTANCE = Services.service(ServiceLoader.load(InternalAPIBridge.class), InternalAPIBridge.class).orElseThrow();
         }
+        //</editor-fold>
 
         return Holder.INSTANCE;
     }
@@ -127,4 +130,6 @@ public interface InternalAPIBridge {
     ComponentFlattener componentFlattener();
 
     <C> PersistentDataKey<C> createPersistentDataKey(Key key, PersistentDataType<?, C> type);
+
+    @Nullable EnchantmentOffer[] rollEnchantmentOffers(ItemStack targetStack, int seed, int bookshelfCount, int offerAmount);
 }
